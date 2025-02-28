@@ -1,50 +1,66 @@
 $headerHight: 4.2rem;
 
 .nav {
-	width: 100%;
-	display: flex;
-	justify-content: space-evenly;
-	direction: ltr;
-	border-radius: 0 0 calc($headerHight / 2) 0;
-	box-shadow: 0px 3px 9px #00000026;
-	height: 4.2rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  direction: ltr;
+  border-radius: 0 0 calc($headerHight / 2) 0;
+  box-shadow: 0px 3px 9px #00000026;
+  height: 4.2rem;
 
-	.wrapper {
+  .wrapper {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    max-width: var(--wrapper);
+  }
 
-		width: 100%;
-		margin: auto;
-		display: flex;
-		justify-content: space-between;
-		max-width: var(--wrapper);
+  button {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background-color: transparent;
 
-	}
+    svg {
+      height: 1.7rem;
+      width: 1.7rem;
+    }
+  }
 
-	button {
-		flex: 1;
-		padding: 0.6rem 1rem;
-		background-color: transparent;
+  .back {
+    transform: rotate(180deg);
+  }
 
-		svg {
-			height: 1.7rem;
-			width: 1.7rem;
-		}
-	}
+  .views {
+    position: relative;
 
-	.back {
-		transform: rotate(180deg);
-	}
+    &__dropdown {
+      position: absolute;
+      background-color: white;
+      box-shadow: 0px 3px 9px #00000026;
+      left: 50%;
+      top: 3rem;
+    }
+  }
 
-	.views {
-		position: relative;
+  .menuFooter {
+    color: white !important;
+    background-color: #5f88e5;
+    display: flex;
 
-		&__dropdown {
-			position: absolute;
-			background-color: white;
-			box-shadow: 0px 3px 9px #00000026;
-			left: 50%;
-			top: 3rem;
-		}
-	}
+    border-top: 1px solid #c7d7fb;
 
+    svg {
+      color: white;
+    }
+  }
 
+  // Ensure MenuOption text is white inside menuFooter
+  .menuFooter .menu-option {
+    color: white !important;
+    border-bottom: none;
+  }
+
+  // Ensure the icon inside the disconnect button is white
 }
