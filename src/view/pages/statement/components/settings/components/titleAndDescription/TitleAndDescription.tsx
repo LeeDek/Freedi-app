@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react'; // ✅ Added useState to manage local form state
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { StatementSettingsProps } from '../../settingsTypeHelpers';
 import { useUserConfig } from '@/controllers/hooks/useUserConfig';
 import './TitleAndDescription.scss';
@@ -16,26 +16,22 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 	const navigate = useNavigate();
 	const titleInputRef = useRef<HTMLInputElement>(null);
 
-	// ✅ Split original title and description from statement
 	const arrayOfStatementParagraphs = statement?.statement.split('\n') || [];
 	const originalTitle = arrayOfStatementParagraphs[0];
 
-	// ✅ Add state to control and update form fields
 	const [title, setTitle] = useState(originalTitle);
 	const [description, setDescription] = useState(statement.description || '');
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// ✅ Focus title input on mount
 	useEffect(() => {
 		if (titleInputRef.current) {
 			titleInputRef.current.focus();
 		}
 	}, []);
 
-	// ✅ Submit handler to call the API and update state
 	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault(); // prevent page reload
+		e.preventDefault();
 		setError(null);
 		setIsSubmitting(true);
 
@@ -56,18 +52,17 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 		};
 
 		try {
-			await updateStatement(updatedStatement);     // ✅ Call API to persist changes
-			setStatementToEdit(updatedStatement);        // ✅ Update app state
-			navigate('/home');                           // ✅ Navigate back
+			await updateStatement(updatedStatement);
+			setStatementToEdit(updatedStatement);
+			navigate('/home');
 		} catch (err) {
-			console.error('Failed to update statement', err); // ✅ Handle setError('An error occurred while saving. Please try again.');
+			console.error('Failed to update statement', err);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
 	return (
-		// ✅ Wrap form with <form> and handle onSubmit
 		<form className='title-and-description' onSubmit={handleSubmit}>
 			<label htmlFor='statement-title'>
 				<VisuallyHidden labelName={t('Group Title')} />
@@ -78,8 +73,8 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 					type='text'
 					name='statement'
 					placeholder={t('Group Title')}
-					value={title}                            // ✅ Controlled input
-					onChange={(e) => setTitle(e.target.value)} // ✅ Update title state
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
 					required
 				/>
 			</label>
@@ -91,21 +86,18 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 					name='description'
 					placeholder={t('Group Description')}
 					rows={3}
-					value={description}                      // ✅ Controlled input
-					onChange={(e) => setDescription(e.target.value)} // ✅ Update description state
+					value={description}
+					onChange={(e) => setDescription(e.target.value)}
 				/>
 			</label>
-			{error && (
-				<p className="error-message" role="alert" style={{ color: 'red', marginTop: '0.5rem' }}>
-					{error}
-				</p>
-			)}
+			{error && <p className="error-message" role="alert">{error}</p>}
+
 			<div className='btns'>
 				<Button
 					text={t('Save')}
 					aria-label='Submit button'
 					data-cy='settings-statement-submit-btn'
-					type='submit'                           // ✅ Triggers handleSubmit
+					type='submit'
 					disabled={isSubmitting}
 				/>
 				<Button
@@ -114,7 +106,7 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 					buttonType={ButtonType.SECONDARY}
 					aria-label='Cancel button'
 					data-cy='settings-statement-cancel-btn'
-					onClick={() => navigate('/home')}       // ✅ Navigate back
+					onClick={() => navigate('/home')}
 				/>
 			</div>
 		</form>
