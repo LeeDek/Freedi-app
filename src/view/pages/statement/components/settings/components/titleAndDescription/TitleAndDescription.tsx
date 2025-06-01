@@ -30,12 +30,24 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 		}
 	}, []);
 
+	useEffect(() => {
+		if (error) {
+			console.warn("Moderation error:", error);
+		}
+	}, [error]);
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setIsSubmitting(true);
 
-		const fullText = `${title}\n${description}`;
+		const fullText = `${title.trim()}\n${description.trim()}`;
+		const updatedStatement = {
+			...statement,
+			statement: fullText,
+			description,
+		};
+
 		const moderation = await analyzeTextWithPerspective(fullText);
 
 		if (!moderation.passed) {
@@ -45,15 +57,11 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 			return;
 		}
 
-		const updatedStatement = {
-			...statement,
-			statement: fullText,
-			description,
-		};
+		// 🔄 Sync with local state
+		setStatementToEdit(updatedStatement);
 
 		try {
 			await updateStatement(updatedStatement);
-			setStatementToEdit(updatedStatement);
 			navigate('/home');
 		} catch (err) {
 			console.error('Failed to update statement', err);
@@ -74,7 +82,16 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 					name='statement'
 					placeholder={t('Group Title')}
 					value={title}
-					onChange={(e) => setTitle(e.target.value)}
+					onChange={(e) => {
+						const newTitle = e.target.value;
+						setTitle(newTitle);
+						setError(null);
+						setStatementToEdit({
+							...statement,
+							statement: `${newTitle}\n${description}`,
+							description,
+						});
+					}}
 					required
 				/>
 			</label>
@@ -87,7 +104,15 @@ const TitleAndDescription: FC<StatementSettingsProps> = ({
 					placeholder={t('Group Description')}
 					rows={3}
 					value={description}
-					onChange={(e) => setDescription(e.target.value)}
+					onChange={(e) => {
+						const newDescription = e.target.value;
+						setDescription(newDescription);
+						setStatementToEdit({
+							...statement,
+							statement: `${title}\n${newDescription}`,
+							description: newDescription,
+						});
+					}}
 				/>
 			</label>
 			{error && <p className="error-message" role="alert">{error}</p>}
