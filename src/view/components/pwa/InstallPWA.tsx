@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import './installPWA.scss';
+import styles from './installPWA.module.scss';
+import InstallAppIcon from '@/assets/icons/installIconW.svg?react';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -55,14 +56,9 @@ const InstallPWA: React.FC = () => {
   if (!isInstallable) return null;
 
   return (
-    <div className="install-pwa">
-      <button onClick={handleInstallClick} className="install-button">
-        <img
-          src="/src/assets/icons/installIconW.svg"
-          alt="Install"
-          className="install-icon"
-          style={{ backgroundColor: 'transparent' }}
-        />
+    <div className={styles.installPwa}>
+      <button className={styles.installButton} onClick={handleInstallClick}>
+        <InstallAppIcon className={styles.installIcon} />
         Install App
       </button>
     </div>
