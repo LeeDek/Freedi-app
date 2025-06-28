@@ -1,4 +1,4 @@
-import React, { MouseEvent, useCallback, useEffect, useState } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useState, useRef } from 'react';
 
 // Styles
 import '@/view/pages/statement/components/createStatementModal/CreateStatementModal.scss';
@@ -66,6 +66,20 @@ export default function MindMapChart({
 		unknown
 	>>(null);
 
+	//Track previously rendered node IDs
+	const prevNodeIdsRef = useRef<Set<string>>(new Set());
+
+	const flattenResults = (result: Results): string[] => {
+		const ids: string[] = [];
+		function traverse(res: Results) {
+			ids.push(res.top.statementId);
+			res.sub?.forEach(traverse);
+		}
+		traverse(result);
+
+		return ids;
+	};
+
 	const [intersectedNodeId, setIntersectedNodeId] = useState('');
 	const [draggedNodeId, setDraggedNodeId] = useState('');
 
@@ -98,12 +112,20 @@ export default function MindMapChart({
 	}
 	const filtered = filterDescendants(descendants);
 	useEffect(() => {
+
+		const activeResults =
+			filterBy !== FilterType.questionsResults ? descendants : filtered;
+
+		// Detect new nodes
+		const currentIds = new Set(flattenResults(activeResults));
+		const previousIds = prevNodeIdsRef.current;
+		const addedIds = [...currentIds].filter((id) => !previousIds.has(id));
+
+		prevNodeIdsRef.current = currentIds;
+
+		// Pass newNodeIds to node creator
 		const { nodes: createdNodes, edges: createdEdges } =
-			createInitialNodesAndEdges(
-				filterBy !== FilterType.questionsResults
-					? descendants
-					: filtered
-			);
+			createInitialNodesAndEdges(activeResults, addedIds);
 
 		const { nodes: layoutedNodes, edges: layoutedEdges } =
 			getLayoutElements(

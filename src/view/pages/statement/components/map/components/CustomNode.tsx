@@ -6,6 +6,8 @@ import { Handle, NodeProps, useStore } from 'reactflow';
 // Icons
 import PlusIcon from '@/assets/icons/plusIcon.svg?react';
 import EllipsisIcon from '@/assets/icons/ellipsisIcon.svg?react';
+// styles
+import '@/view/pages/statement/components/map/mapHelpers/reactFlow.scss';
 // Statements functions
 import { statementTitleToDisplay } from '@/controllers/general/helpers';
 import { useMapContext } from '@/controllers/hooks/useMap';
@@ -38,6 +40,7 @@ const nodeStyle = (statementColor: {
 };
 
 function CustomNode({ data }: NodeProps) {
+	const isNew = data?.isNew ?? false;
 	const navigate = useNavigate();
 	const { result, parentStatement, dimensions } = data;
 	const { statementId, statement } = result.top as Statement;
@@ -52,6 +55,23 @@ function CustomNode({ data }: NodeProps) {
 
 	const statementColor = useStatementColor({ statement: localStatement });
 	const [showMenu, setShowMenu] = useState(false);
+
+	const [animate, setAnimate] = useState(false);
+
+	useEffect(() => {
+		if (isNew) {
+			const timeout = setTimeout(() => {
+				setAnimate(true);
+
+				// Remove animation class after it completes (0.3s in CSS)
+				setTimeout(() => {
+					setAnimate(false);
+				}, 300); // match your CSS animation duration
+			}, 300);
+
+			return () => clearTimeout(timeout);
+		}
+	}, [isNew]);
 
 	const { isVoted, isChosen, statementType } = result.top;
 	useEffect(() => {
@@ -177,7 +197,7 @@ function CustomNode({ data }: NodeProps) {
 					textAlign: 'center',
 					wordBreak: 'break-word',
 				}}
-				className='node__content'
+				className={`node__content ${animate ? 'tremble-animate' : ''}`}
 			>
 				{isEdit ? (
 					<input
