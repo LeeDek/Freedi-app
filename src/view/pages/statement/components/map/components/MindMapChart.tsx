@@ -50,6 +50,8 @@ interface Props {
 	descendants: Results;
 	filterBy: FilterType;
 	isAdmin: boolean;
+	newNodeIds: string[];
+
 }
 
 export default function MindMapChart({

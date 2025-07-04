@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from 'react';
+import { useState, FC, useEffect, useRef } from 'react'; // <- useRef added
 import { useSelector } from 'react-redux';
 import { ReactFlowProvider } from 'reactflow';
 import CreateStatementModal from '../createStatementModal/CreateStatementModal';
@@ -16,6 +16,7 @@ import Modal from '@/view/components/modal/Modal';
 import { StatementType, Role } from 'delib-npm';
 import { useParams } from 'react-router';
 import { useMindMap } from './MindMapMV';
+import { flattenResults } from './mapHelpers/resultUtils';
 
 const MindMap: FC = () => {
 	// Add a render counter for debugging - remove in production
@@ -46,12 +47,34 @@ const MindMap: FC = () => {
 		FilterType.questionsResultsOptions
 	);
 
+	// 🆕 Track new node IDs for tremble animation
+	const [newNodeIds, setNewNodeIds] = useState<string[]>([]);
+	const prevIdsRef = useRef<string[]>([]);
+
+	useEffect(() => {
+		if (results) {
+			const allCurrentIds = flattenResults(results); // Flatten tree of results to list of statementIds
+			const prevIds = prevIdsRef.current;
+
+			const newOnes = allCurrentIds.filter(
+				(id) => !prevIds.includes(id)
+			);
+
+			if (newOnes.length > 0) {
+				setNewNodeIds(newOnes);
+			}
+
+			prevIdsRef.current = allCurrentIds;
+		}
+	}, [results]);
+
 	const toggleModal = (show: boolean) => {
 		setMapContext((prev) => ({
 			...prev,
 			showModal: show,
 		}));
 	};
+
 	const current = useSelector(
 		selectedId ? statementSelector(selectedId) : () => undefined
 	);
@@ -111,6 +134,8 @@ const MindMap: FC = () => {
 							descendants={results}
 							isAdmin={_isAdmin}
 							filterBy={filterBy}
+							// 🆕 Pass newNodeIds to identify new items in CustomNode
+							newNodeIds={newNodeIds}
 						/>
 					) : (
 						<div>Loading mind map data...</div>

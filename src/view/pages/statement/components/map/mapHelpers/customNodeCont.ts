@@ -83,7 +83,6 @@ export const nodeOptions = (
     80
   );
 
-  // Estimate size for layout purposes
   const estimatedWidth = Math.min(Math.max(nodeTitle.length * 8, 100), 300);
   const estimatedHeight = Math.ceil(nodeTitle.length / 25) * 20 + 40;
 
@@ -99,11 +98,11 @@ export const nodeOptions = (
         width: estimatedWidth,
         height: estimatedHeight,
       },
-      isNew, // Passed to CustomNode to apply internal changes too
+      isNew, // Flag to indicate if this node is newly added
     },
-    className: isNew ? "new-node" : undefined, // Applies outer node animation
+    className: isNew ? "new-node" : undefined,
     position,
-    type: "custom", // Make sure your CustomNode handles this type
+    type: "custom",
   };
 };
 
